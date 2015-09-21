@@ -76,18 +76,25 @@ class galera::health_check(
     per_source  => 'UNLIMITED',
   }
 
-  # Manage mysqlchk service in /etc/services
-  augeas { "mysqlchk":
-    require => File["${xinetd_dir}/mysqlchk"],
-    context =>  "/files/etc/services",
-    changes => [
-      "ins service-name after service-name[last()]",
-      "set service-name[last()] mysqlchk",
-      "set service-name[. = 'mysqlchk']/port ${mysqlchk_port}",
-      "set service-name[. = 'mysqlchk']/protocol tcp",
-    ],
-    onlyif => "match service-name[port = '${mysqlchk_port}'] size == 0",
+  # manage mysqlchk service for both centos and debian based OS
+  file_line { 'mysqlchk':
+    path => '/etc/services',
+    line => "mysqlchk  ${mysqlchk_port}/tcp            # mysqlchk service",
   }
+
+#  This manage mysqlchk service works only for debian
+#  # Manage mysqlchk service in /etc/services
+#  augeas { "mysqlchk":
+#    require => File["${xinetd_dir}/mysqlchk"],
+#    context =>  "/files/etc/services",
+#    changes => [
+#      "ins service-name after service-name[last()]",
+#      "set service-name[last()] mysqlchk",
+#      "set service-name[. = 'mysqlchk']/port ${mysqlchk_port}",
+#      "set service-name[. = 'mysqlchk']/protocol tcp",
+#    ],
+#    onlyif => "match service-name[port = '${mysqlchk_port}'] size == 0",
+#  }
 
   # Create a user for script to use for checking MySQL health status.
   mysql_user { "${mysqlchk_user}@${mysql_host}":
