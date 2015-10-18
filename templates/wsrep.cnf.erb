@@ -154,3 +154,6 @@ progress=1
 # Enabling it instruments key stages of backup/restore in SST.
 time=1
 
+[xtrabackup]
+parallel=<%= @xtrabackup_parallel %>
+rebuild-threads=<%= @xtrabackup_threads %>

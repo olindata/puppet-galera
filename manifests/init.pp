@@ -18,7 +18,9 @@ class galera (
   $wsrep_sst_receive_address   = $::ipaddress,
   $wsrep_sst_donor             = '',
   $wsrep_cluster_address       = false,
-  $wsrep_slave_threads         = 1,) {
+  $wsrep_slave_threads         = 1,
+  $xtrabackup_parallel         = 16,
+  $xtrabackup_threads          = 16,) {
   # validate parameters
   validate_string($wsrep_sst_auth_user)
   validate_string($wsrep_sst_auth_password)
@@ -52,7 +54,7 @@ class galera (
   package { 'galera':
     ensure  => present,
     name    => $package_name,
-    require => Package['mysql-server'],  
+    require => Package['mysql-server'],
   }
 
   file { "${mysql_config_directory}/wsrep.cnf":
